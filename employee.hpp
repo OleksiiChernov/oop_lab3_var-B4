@@ -12,6 +12,7 @@ class Employee
 public:
 	
 	virtual  ~Employee() = default;
+	Employee(std::string const & _employeeName, double _salaryBonus = 0);
 
 	Employee(const Employee &) = delete;
 	Employee & operator = (const Employee &) = delete;
@@ -19,17 +20,19 @@ public:
 	std::string const & getEmployeeName() const { return m_employeeName; }
 	double const getSalaryBonus() const { return m_salaryBonus; }
 	void setSalaryBonus(double _bonus);
+	std::string const & getManagerName()const { return m_managerName; }
+	void setManagerName(std::string  _managerName);
+	void delManager();
 
 	virtual float calculateSalaryPerMounth(float _baseSalary);
 	virtual float calculateSalaryPerYear(float _baseSalary);
 
-protected:
-
-	Employee(std::string const & _employeeName, double _salaryBonus = 0);
+	
 
 private:
 	std::string m_employeeName;
 	double m_salaryBonus;
+	std::string m_managerName;
 };
 
 

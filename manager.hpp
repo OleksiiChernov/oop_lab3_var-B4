@@ -7,6 +7,7 @@
 
 #include "employee.hpp"
 #include <vector>
+#include <string>
 
 /*****************************************************************************/
 
@@ -23,7 +24,10 @@ public:
 	std::vector <Employee *> const & getSubordinateEmployee() const { return m_subordinateEmployee; }
 
 	float getManagerSalary(float _baseSalary);
-
+	void setNewEmployee(std::string const & _fullName);
+	void deleteEmployee(std::string const & _fullName);
+	bool hasSubordinatedEmployee(std::string const & _fullName);
+	void fireManager();
 
 private:
 

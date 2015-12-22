@@ -67,11 +67,12 @@ public:
 	void fire ( std::string const & _employeeFullName );
 
 /*-----------------------------------------------------------------*/
-	int getRegularEmployeeNumberAtContainer(std::string const & _fullName) const;
+	
 
 private:
 
-	
+	int getRegularEmployeeNumberAtContainer(std::string const & _fullName) const;
+	int getManagerNumberAtContainer(std::string const & _fullName) const;
 
 	std::vector <Manager *> m_managers;
 	std::vector <RegularEmployee *> m_regularEmployee;

@@ -3,7 +3,7 @@
 #include "employee.hpp"
 #include "messages.hpp"
 #include <exception>
-
+#include <string>
 
 Employee::Employee(std::string const & _employeeName, double _salaryBonus)
 	: m_employeeName(_employeeName), m_salaryBonus(_salaryBonus)
@@ -27,6 +27,17 @@ void Employee::setSalaryBonus(double _bonus)
 		throw std::logic_error(Messages::NegativeBonusAmount);
 	else
 		m_salaryBonus = _bonus;
+}
+
+
+void Employee::setManagerName(std::string  _managerName)
+{
+		m_managerName = _managerName;
+}
+
+void Employee::delManager()
+{
+	m_managerName = "";
 }
 
 float Employee::calculateSalaryPerMounth(float _baseSalary)

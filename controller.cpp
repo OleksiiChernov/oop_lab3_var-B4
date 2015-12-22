@@ -5,6 +5,7 @@
 
 #include <stdexcept>
 #include <algorithm>
+#include <string>
 
 
 int Controller::getRegularEmployeeNumberAtContainer(std::string const & _fullName) const
@@ -16,9 +17,19 @@ int Controller::getRegularEmployeeNumberAtContainer(std::string const & _fullNam
 		return a;
 	}
 	else
-		throw std::logic_error(Messages::UnregisteredEmployeeName);
+		return -1;
+}
 
-	return -1;
+int Controller::getManagerNumberAtContainer(std::string const & _fullName) const
+{
+	auto itr = std::find(m_managers.begin(), m_managers.end(), _fullName);
+	if (itr != m_managers.end())
+	{
+		int a = (int)*itr;
+		return a;
+	}
+	else
+		return -1;
 }
 
 
@@ -89,6 +100,8 @@ double Controller::getEmployeeSalary(std::string const & _fullName, double _base
 	int a = getRegularEmployeeNumberAtContainer(_fullName);
 	if (a != -1)
 		return m_regularEmployee[a]->calculateSalaryPerMounth(_baseSalary);
+	else
+		throw std::logic_error(Messages::UnregisteredEmployeeName);
 }
 
 
@@ -108,14 +121,20 @@ double Controller::getTotalSalary(double _baseSalary) const
 void Controller::changeBonus(std::string const & _fullName, double _newBonus)
 {
 	int a = getRegularEmployeeNumberAtContainer(_fullName);
-	m_regularEmployee[a]->setSalaryBonus(_newBonus);
+	if(a != -1)
+		m_regularEmployee[a]->setSalaryBonus(_newBonus);
+	else
+		throw std::logic_error(Messages::UnregisteredEmployeeName);
 }
 
 
 double Controller::getEmployeeBonus(std::string const & _fullName) const
 {
 	int a = getRegularEmployeeNumberAtContainer(_fullName);
-	m_regularEmployee[a]->getSalaryBonus();
+	if (a != -1)
+		m_regularEmployee[a]->getSalaryBonus();
+	else
+		throw std::logic_error(Messages::UnregisteredEmployeeName);
 }
 
 
@@ -136,6 +155,7 @@ std::unordered_set<std::string> Controller::getManagerSubordinates(std::string c
 	int a = getRegularEmployeeNumberAtContainer(_fullName);
 	if (a > 0)
 		throw std::logic_error(Messages::NotAManager);
+
 	std::unordered_set <std::string> _employeeNames;
 	
 	auto it = std::find(m_managers.begin(), m_managers.end(), _fullName);
@@ -151,6 +171,133 @@ std::unordered_set<std::string> Controller::getManagerSubordinates(std::string c
 		else
 			return _employeeNames;
 	}
+}
+
+
+void Controller::assignManager(std::string const & _employeeFullName, std::string const & _managerFullName)
+{
+	int a = getRegularEmployeeNumberAtContainer(_managerFullName);
+	if (a > 0)
+		throw std::logic_error(Messages::NotAManager);
+
+	auto it = std::find(m_managers.begin(), m_managers.end(), _managerFullName);
+	if (it != m_managers.end())
+	{
+		int a = (int)*it;
+		m_managers[a]->setNewEmployee(_employeeFullName);
+
+		int b = getRegularEmployeeNumberAtContainer(_employeeFullName);
+		if(b > 0)
+			m_regularEmployee[b]->setManagerName(_managerFullName);
+		else
+		{
+			int c = getManagerNumberAtContainer(_employeeFullName);
+			if(c > 0)
+				m_managers[c]->setManagerName(_managerFullName);
+		}
+	}
+	else
+		throw std::logic_error(Messages::UnregisteredEmployeeName);
+
+}
+
+
+void Controller::deassignManager(std::string const & _employeeFullName)
+{
+	auto it = std::find(m_regularEmployee.begin(), m_regularEmployee.end(), _employeeFullName);
+	auto itr = std::find(m_managers.begin(), m_managers.end(), _employeeFullName);
+
+	if (it != m_regularEmployee.end())
+	{
+		int a = (int)*it;
+		if (m_regularEmployee[a]->getManagerName() != "")
+		{
+			for (Manager * _mng : m_managers)
+			{
+				if (_mng->hasSubordinatedEmployee(_employeeFullName))
+				{
+					_mng->deleteEmployee(_employeeFullName);
+					if (it != m_regularEmployee.end())
+					{
+						int a = (int)*it;
+						m_regularEmployee[a]->delManager();
+					}
+					else
+					{
+						if (itr != m_managers.end())
+						{
+							int b = (int)*itr;
+							m_managers[b]->delManager();
+						}
+					}
+				}
+			} // for Manager
+		}
+		else
+			throw std::logic_error(Messages::EmployeeHasNoManager);
+	}
+	else if (itr != m_managers.end())
+	{
+		int a = (int)*itr;
+		if (m_managers[a]->getManagerName() != "")
+		{
+			for (Manager * _mng : m_managers)
+			{
+				if (_mng->hasSubordinatedEmployee(_employeeFullName))
+				{
+					_mng->deleteEmployee(_employeeFullName);
+					if (it != m_regularEmployee.end())
+					{
+						int a = (int)*it;
+						m_regularEmployee[a]->delManager();
+					}
+					else
+					{
+						if (itr != m_managers.end())
+						{
+							int b = (int)*itr;
+							m_managers[b]->delManager();
+						}
+					}
+				}
+			} // for Manager
+		}
+		else
+			throw std::logic_error(Messages::EmployeeHasNoManager);
+	}
+	else
+		throw std::logic_error(Messages::UnregisteredEmployeeName);
+		
+} 
+
+
+void Controller::promote(std::string const & _employeeFullName)
+{
+	int a = getRegularEmployeeNumberAtContainer(_employeeFullName);
+	int b = getManagerNumberAtContainer(_employeeFullName);
+	if (a > 0)
+	{
+		m_regularEmployee[a]->levelUp();
+	}
+	else if (b > 0)
+		throw std::logic_error(Messages::CannotPromoteManagers);
+	else
+		throw std::logic_error(Messages::UnregisteredEmployeeName);
+}
+
+
+void Controller::fire(std::string const & _employeeFullName)
+{
+	int a = getManagerNumberAtContainer(_employeeFullName);
+	if (a > 0)
+	{
+		m_managers[a]->fireManager();
+
+		if (m_managers[a]->getSubordinateEmployee().size() > 0)
+			throw std::logic_error(Messages::CannotFireAssignedManager);
+	}
+	else
+		throw std::logic_error(Messages::UnregisteredEmployeeName);
 }
 
 
