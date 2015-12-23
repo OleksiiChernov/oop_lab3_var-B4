@@ -17,7 +17,9 @@ class RegularEmployee
 {
 
 public:
-	RegularEmployee(std::string const & _employeeName,RegularEmployeeLevel _lvl = RegularEmployeeLevel::Junior, double _salaryBonus = 0 );
+	RegularEmployee(std::string const & _employeeName,
+		RegularEmployeeLevel _lvl = RegularEmployeeLevel::Junior, double _salaryBonus = 0 );
+
 	RegularEmployeeLevel const getEmployeeLevel() const { return m_employeeLevel; }
 	void levelUp();
 

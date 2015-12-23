@@ -25,7 +25,7 @@ public:
 
 /*-----------------------------------------------------------------*/
 
-	Controller ();
+	Controller() {};
 
 	Controller ( const Controller & ) = delete;
 

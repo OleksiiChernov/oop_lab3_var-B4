@@ -3,7 +3,7 @@
 #include "manager.hpp"
 #include "messages.hpp"
 #include <string>
-
+#include <algorithm>
 
 float Manager::getManagerSalary(float _baseSalary)
 {
@@ -17,7 +17,15 @@ float Manager::getManagerSalary(float _baseSalary)
 
 void Manager::setNewEmployee(std::string const & _fullName)
 {
-	auto it = std::find(m_subordinateEmployee.begin(), m_subordinateEmployee.end(), _fullName);
+	auto it = std::find_if(m_subordinateEmployee.begin(), m_subordinateEmployee.end(), 
+		[_fullName](Employee const * _empl)
+	{
+		if (_empl->getEmployeeName() == _fullName)
+			return true;
+		else
+			return false;
+	}
+		);
 	if (it != m_subordinateEmployee.end())
 	{
 		Employee * _empl = new Employee(_fullName);
@@ -31,7 +39,15 @@ void Manager::deleteEmployee(std::string const & _fullName)
 {
 	if(hasSubordinatedEmployee(_fullName))
 	{
-		auto it = std::find(m_subordinateEmployee.begin(), m_subordinateEmployee.end(), _fullName);
+		auto it = std::find_if(m_subordinateEmployee.begin(), m_subordinateEmployee.end(),
+			[_fullName](Employee const * _empl)
+		{
+			if (_empl->getEmployeeName() == _fullName)
+				return true;
+			else
+				return false;
+		}
+		);
 		int a = (int)*it;
 		m_subordinateEmployee.erase(m_subordinateEmployee.begin() + a);
 	}
@@ -41,7 +57,15 @@ void Manager::deleteEmployee(std::string const & _fullName)
 
 bool Manager::hasSubordinatedEmployee(std::string const & _fullName)
 {
-	auto it = std::find(m_subordinateEmployee.begin(), m_subordinateEmployee.end(), _fullName);
+	auto it = std::find_if(m_subordinateEmployee.begin(), m_subordinateEmployee.end(),
+		[_fullName](Employee const * _empl)
+	{
+		if (_empl->getEmployeeName() == _fullName)
+			return true;
+		else
+			return false;
+	}
+	);
 	if (it != m_subordinateEmployee.end())
 		return true;
 	else
