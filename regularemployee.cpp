@@ -1,6 +1,7 @@
 // (C) 2013-2015, Sergei Zaychenko, KNURE, Kharkiv, Ukraine
 
 #include "regularemployee.hpp"
+#include "messages.hpp"
 #include <string>
 
 
@@ -23,26 +24,29 @@ void RegularEmployee::levelUp()
 
 float RegularEmployee::calculateSalaryPerMounth(float _baseSalary)
 {
+	if (_baseSalary < 0)
+		throw std::logic_error(Messages::NegativeBaseSalary);
+
 	switch (m_employeeLevel)
 	{
 		case RegularEmployeeLevel::Junior:
 		{
-			return calculateSalaryPerMounth(0.5 * _baseSalary);
+			return 0.5 * _baseSalary + getSalaryBonus();
 			break;
 		}
 		case RegularEmployeeLevel::Middle:
 		{
-			return calculateSalaryPerMounth( _baseSalary);
+			return  _baseSalary + getSalaryBonus();
 			break;
 		}
 		case RegularEmployeeLevel::Senior:
 		{
-			return calculateSalaryPerMounth(1.2 * _baseSalary);
+			return 1.2 * _baseSalary + getSalaryBonus();
 			break;
 		}
 		case RegularEmployeeLevel::Lead:
 		{
-			return calculateSalaryPerMounth(1.5 * _baseSalary);
+			return 1.5 * _baseSalary + getSalaryBonus();
 			break;
 		}
 	}
@@ -56,22 +60,22 @@ float RegularEmployee::calculateSalaryPerYear(float _baseSalary)
 	{
 		case RegularEmployeeLevel::Junior:
 		{
-			return calculateSalaryPerYear(0.5 * _baseSalary);
+			return 12 * calculateSalaryPerMounth(0.5 * _baseSalary);
 			break;
 		}
 		case RegularEmployeeLevel::Middle:
 		{
-			return calculateSalaryPerYear(_baseSalary);
+			return 12 * calculateSalaryPerMounth(_baseSalary);
 			break;
 		}
 		case RegularEmployeeLevel::Senior:
 		{
-			return calculateSalaryPerYear(1.2 * _baseSalary);
+			return 12 * calculateSalaryPerMounth(1.2 * _baseSalary);
 			break;
 		}
 		case RegularEmployeeLevel::Lead:
 		{
-			return calculateSalaryPerYear(1.5 * _baseSalary);
+			return 12 * calculateSalaryPerMounth(1.5 * _baseSalary);
 			break;
 		}
 	}

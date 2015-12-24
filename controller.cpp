@@ -17,7 +17,7 @@ Controller::~Controller()
 		delete _emp;
 }
 
-int Controller::getRegularEmployeeNumberAtContainer(std::string const & _fullName) const
+auto Controller::getRegularEmployeeNumberAtContainer(std::string const & _fullName) const
 {
 	auto itr = std::find_if(m_regularEmployee.begin(), m_regularEmployee.end(), 
 		[_fullName](RegularEmployee const * _empl)
@@ -31,14 +31,13 @@ int Controller::getRegularEmployeeNumberAtContainer(std::string const & _fullNam
 
 	if (itr != m_regularEmployee.end())
 	{
-		int a = (int)*itr;
-		return a;
+		return itr;
 	}
 	else
-		return -1;
+		return itr = m_regularEmployee.end();
 }
 
-int Controller::getManagerNumberAtContainer(std::string const & _fullName) const
+auto Controller::getManagerNumberAtContainer(std::string const & _fullName) const
 {
 	auto itr = std::find_if(m_managers.begin(), m_managers.end(), 
 		[_fullName](Manager const * _mng)
@@ -51,54 +50,67 @@ int Controller::getManagerNumberAtContainer(std::string const & _fullName) const
 	);
 	if (itr != m_managers.end())
 	{
-		int a = (int)*itr;
-		return a;
+		return itr;
 	}
 	else
-		return -1;
+		return itr = m_managers.end();
 }
 
 
 
 void Controller::createManager(std::string const & _fullName)
 {
+	auto it_empl = getRegularEmployeeNumberAtContainer(_fullName);
 
-	int a = getManagerNumberAtContainer(_fullName);
-
-	if (a == (int)*m_managers.end())
-	{
-		Manager * mng = new Manager(_fullName);
-		m_managers.push_back(mng);
-	}
-	else
+	if (it_empl != m_regularEmployee.end())
 		throw std::logic_error(Messages::EmployeeFullNameNonUnique);
+	else
+	{
+
+		auto it_mng = getManagerNumberAtContainer(_fullName);
+
+		if (it_mng == m_managers.end())
+		{
+			Manager * mng = new Manager(_fullName);
+			m_managers.push_back(mng);
+		}
+		else
+			throw std::logic_error(Messages::EmployeeFullNameNonUnique);
+	}
 }
 
 
 void Controller::createRegular(std::string const & _fullName, RegularEmployeeLevel _startingLevel)
 {
-	int a = getRegularEmployeeNumberAtContainer(_fullName);
+	auto it_mng = getManagerNumberAtContainer(_fullName);
 
-	if (a == (int)*m_regularEmployee.end())
-	{
-		RegularEmployee * empl = new RegularEmployee(_fullName, _startingLevel);
-		m_regularEmployee.push_back(empl);
-	}
-	else
+	if (it_mng != m_managers.end())
 		throw std::logic_error(Messages::EmployeeFullNameNonUnique);
+	else
+	{
+		auto it_empl = getRegularEmployeeNumberAtContainer(_fullName);
+
+		if (it_empl == m_regularEmployee.end())
+		{
+			RegularEmployee * empl = new RegularEmployee(_fullName, _startingLevel);
+			m_regularEmployee.push_back(empl);
+		}
+		else
+			throw std::logic_error(Messages::EmployeeFullNameNonUnique);
+	}
 }
 
 
 bool Controller::isKnownEmployee(std::string const & _fullName) const
 {
-	int a = getManagerNumberAtContainer(_fullName);
+	auto it_mng = getManagerNumberAtContainer(_fullName);
 
-	if (a != (int)*m_managers.end())
+	if (it_mng != m_managers.end())
 		return true;
 	else
 	{
-		int b = getRegularEmployeeNumberAtContainer(_fullName);
-		if (b != (int)*m_regularEmployee.end())
+		auto it_empl = getRegularEmployeeNumberAtContainer(_fullName);
+		if (it_empl != m_regularEmployee.end())
 			return true;
 	}
 
@@ -108,14 +120,14 @@ bool Controller::isKnownEmployee(std::string const & _fullName) const
 
 RegularEmployeeLevel Controller::getRegularEmployeeLevel(std::string const & _fullName) const
 {
-	int a = getManagerNumberAtContainer(_fullName);
-	if (a != (int)*m_managers.end())
+	auto it_mng = getManagerNumberAtContainer(_fullName);
+	if (it_mng != m_managers.end())
 		throw std::logic_error(Messages::NotARegular);
 	else
 	{
-		int a = getRegularEmployeeNumberAtContainer(_fullName);
-		if (a != -1)
-			return m_regularEmployee[a]->getEmployeeLevel();
+		auto it_empl = getRegularEmployeeNumberAtContainer(_fullName);
+		if (it_empl != m_regularEmployee.end())
+			return (*it_empl)->getEmployeeLevel();
 		else
 			throw std::logic_error(Messages::UnregisteredEmployeeName);
 	}
@@ -124,9 +136,12 @@ RegularEmployeeLevel Controller::getRegularEmployeeLevel(std::string const & _fu
 
 double Controller::getEmployeeSalary(std::string const & _fullName, double _baseSalary)
 {
-	int a = getRegularEmployeeNumberAtContainer(_fullName);
-	if (a != -1)
-		return m_regularEmployee[a]->calculateSalaryPerMounth(_baseSalary);
+	auto it_empl = getRegularEmployeeNumberAtContainer(_fullName);
+	auto it_mng = getManagerNumberAtContainer(_fullName);
+	if (it_empl != m_regularEmployee.end())
+		return (*it_empl)->calculateSalaryPerMounth(_baseSalary);
+	else if (it_mng != m_managers.end())
+		return (*it_mng)->calculateSalaryPerMounth(_baseSalary);
 	else
 		throw std::logic_error(Messages::UnregisteredEmployeeName);
 }
@@ -147,9 +162,9 @@ double Controller::getTotalSalary(double _baseSalary) const
 
 void Controller::changeBonus(std::string const & _fullName, double _newBonus)
 {
-	int a = getRegularEmployeeNumberAtContainer(_fullName);
-	if(a != -1)
-		m_regularEmployee[a]->setSalaryBonus(_newBonus);
+	auto it_empl = getRegularEmployeeNumberAtContainer(_fullName);
+	if(it_empl != m_regularEmployee.end())
+		(*it_empl)->setSalaryBonus(_newBonus);
 	else
 		throw std::logic_error(Messages::UnregisteredEmployeeName);
 }
@@ -157,9 +172,9 @@ void Controller::changeBonus(std::string const & _fullName, double _newBonus)
 
 double Controller::getEmployeeBonus(std::string const & _fullName) const
 {
-	int a = getRegularEmployeeNumberAtContainer(_fullName);
-	if (a != -1)
-		return m_regularEmployee[a]->getSalaryBonus();
+	auto it_empl = getRegularEmployeeNumberAtContainer(_fullName);
+	if (it_empl != m_regularEmployee.end())
+		return (*it_empl)->getSalaryBonus();
 	else
 		throw std::logic_error(Messages::UnregisteredEmployeeName);
 }
@@ -187,18 +202,18 @@ std::string Controller::getEmployeeManager(std::string const & _fullName) const
 
 std::unordered_set<std::string> Controller::getManagerSubordinates(std::string const & _fullName) const
 {
-	int a = getRegularEmployeeNumberAtContainer(_fullName);
-	if (a > 0)
+	auto it_empl = getRegularEmployeeNumberAtContainer(_fullName);
+	if (it_empl > m_regularEmployee.begin())
 		throw std::logic_error(Messages::NotAManager);
 
 	std::unordered_set <std::string> _employeeNames;
 	
-	int b = getManagerNumberAtContainer(_fullName);
-	if (b != (int)*m_managers.end())
+	auto it_mng = getManagerNumberAtContainer(_fullName);
+	if (it_mng != m_managers.end())
 	{
-		if (m_managers[b]->getSubordinateEmployee().size() > 0)
+		if ((*it_mng)->getSubordinateEmployee().size() > 0)
 		{
-			for (Employee * _empl : m_managers[b]->getSubordinateEmployee())
+			for (Employee * _empl : (*it_mng)->getSubordinateEmployee())
 				_employeeNames.insert(_empl->getEmployeeName());
 			return _employeeNames;
 		}
@@ -210,54 +225,55 @@ std::unordered_set<std::string> Controller::getManagerSubordinates(std::string c
 
 void Controller::assignManager(std::string const & _employeeFullName, std::string const & _managerFullName)
 {
-	int a = getRegularEmployeeNumberAtContainer(_managerFullName);
-	if (a > 0)
+	auto it_empl = getRegularEmployeeNumberAtContainer(_managerFullName);
+	if (it_empl >= m_regularEmployee.begin())
 		throw std::logic_error(Messages::NotAManager);
-
-	int d = getManagerNumberAtContainer(_managerFullName);
-	if (d != (int)*m_managers.end())
-	{
-		m_managers[d]->setNewEmployee(_employeeFullName);
-
-		int b = getRegularEmployeeNumberAtContainer(_employeeFullName);
-		if(b > 0)
-			m_regularEmployee[b]->setManagerName(_managerFullName);
-		else
-		{
-			int c = getManagerNumberAtContainer(_employeeFullName);
-			if(c > 0)
-				m_managers[c]->setManagerName(_managerFullName);
-		}
-	}
 	else
-		throw std::logic_error(Messages::UnregisteredEmployeeName);
+	{
+		auto it_mng = getManagerNumberAtContainer(_managerFullName);
+		if (it_mng != m_managers.end())
+		{
+			(*it_mng)->setNewEmployee(_employeeFullName);
 
+			auto it_emplToSet = getRegularEmployeeNumberAtContainer(_employeeFullName);
+			if (it_emplToSet >= m_regularEmployee.begin())
+				(*it_emplToSet)->setManagerName(_managerFullName);
+			else
+			{
+				auto it_mngSetMng = getManagerNumberAtContainer(_employeeFullName);
+				if (it_mngSetMng >= m_managers.begin())
+					(*it_mngSetMng)->setManagerName(_managerFullName);
+			}
+		}
+		else
+			throw std::logic_error(Messages::UnregisteredEmployeeName);
+	}
 }
 
 
 void Controller::deassignManager(std::string const & _employeeFullName)
 {
-	int a = getRegularEmployeeNumberAtContainer(_employeeFullName);
-	int b = getManagerNumberAtContainer(_employeeFullName);
+	auto it_empl = getRegularEmployeeNumberAtContainer(_employeeFullName);
+	auto it_mng = getManagerNumberAtContainer(_employeeFullName);
 
-	if (a != (int)*m_regularEmployee.end())
+	if (it_empl != m_regularEmployee.end())
 	{
-		if (m_regularEmployee[a]->getManagerName() != "")
+		if ((*it_empl)->getManagerName() != "")
 		{
 			for (Manager * _mng : m_managers)
 			{
 				if (_mng->hasSubordinatedEmployee(_employeeFullName))
 				{
 					_mng->deleteEmployee(_employeeFullName);
-					if (a != (int)*m_regularEmployee.end())
+					if (it_empl != m_regularEmployee.end())
 					{
-						m_regularEmployee[a]->delManager();
+						(*it_empl)->delManager();
 					}
 					else
 					{
-						if (b != (int)*m_managers.end())
+						if (it_mng != m_managers.end())
 						{
-							m_managers[b]->delManager();
+							(*it_mng)->delManager();
 						}
 					}
 				}
@@ -266,24 +282,24 @@ void Controller::deassignManager(std::string const & _employeeFullName)
 		else
 			throw std::logic_error(Messages::EmployeeHasNoManager);
 	}
-	else if (b != (int)*m_managers.end())
+	else if (it_mng != m_managers.end())
 	{
-		if (m_managers[b]->getManagerName() != "")
+		if ( (*it_mng)->getManagerName() != "")
 		{
 			for (Manager * _mng : m_managers)
 			{
 				if (_mng->hasSubordinatedEmployee(_employeeFullName))
 				{
 					_mng->deleteEmployee(_employeeFullName);
-					if (a != (int)*m_regularEmployee.end())
+					if (it_empl != m_regularEmployee.end())
 					{
-						m_regularEmployee[a]->delManager();
+						(*it_empl)->delManager();
 					}
 					else
 					{
-						if (b != (int)*m_managers.end())
+						if (it_mng != m_managers.end())
 						{
-							m_managers[b]->delManager();
+							(*it_mng)->delManager();
 						}
 					}
 				}
@@ -300,13 +316,13 @@ void Controller::deassignManager(std::string const & _employeeFullName)
 
 void Controller::promote(std::string const & _employeeFullName)
 {
-	int a = getRegularEmployeeNumberAtContainer(_employeeFullName);
-	int b = getManagerNumberAtContainer(_employeeFullName);
-	if (a > 0)
+	auto it_empl = getRegularEmployeeNumberAtContainer(_employeeFullName);
+	auto it_mng = getManagerNumberAtContainer(_employeeFullName);
+	if (it_empl >= m_regularEmployee.begin() && it_empl != m_regularEmployee.end())
 	{
-		m_regularEmployee[a]->levelUp();
+		(*it_empl)->levelUp();
 	}
-	else if (b > 0)
+	else if (it_mng >= m_managers.begin())
 		throw std::logic_error(Messages::CannotPromoteManagers);
 	else
 		throw std::logic_error(Messages::UnregisteredEmployeeName);
@@ -315,12 +331,12 @@ void Controller::promote(std::string const & _employeeFullName)
 
 void Controller::fire(std::string const & _employeeFullName)
 {
-	int a = getManagerNumberAtContainer(_employeeFullName);
-	if (a > 0)
+	auto it_mng = getManagerNumberAtContainer(_employeeFullName);
+	if (it_mng >= m_managers.begin() && it_mng != m_managers.end())
 	{
-		m_managers[a]->fireManager();
+		(*it_mng)->fireManager();
 
-		if (m_managers[a]->getSubordinateEmployee().size() > 0)
+		if ((*it_mng)->getSubordinateEmployee().size() > 0)
 			throw std::logic_error(Messages::CannotFireAssignedManager);
 	}
 	else

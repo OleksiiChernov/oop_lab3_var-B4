@@ -26,7 +26,7 @@ void Manager::setNewEmployee(std::string const & _fullName)
 			return false;
 	}
 		);
-	if (it != m_subordinateEmployee.end())
+	if (it == m_subordinateEmployee.end())
 	{
 		Employee * _empl = new Employee(_fullName);
 		m_subordinateEmployee.push_back(_empl);
@@ -48,8 +48,8 @@ void Manager::deleteEmployee(std::string const & _fullName)
 				return false;
 		}
 		);
-		int a = (int)*it;
-		m_subordinateEmployee.erase(m_subordinateEmployee.begin() + a);
+
+		m_subordinateEmployee.erase(it);
 	}
 	else
 		throw std::logic_error(Messages::UnregisteredEmployeeName);
@@ -70,6 +70,15 @@ bool Manager::hasSubordinatedEmployee(std::string const & _fullName)
 		return true;
 	else
 		return false;
+}
+
+float Manager::calculateSalaryPerMounth(float _baseSalary)
+{
+	if (m_subordinateEmployee.size() > 0)
+		return getManagerSalary(_baseSalary);
+	else
+		return 0.0;
+
 }
 
 

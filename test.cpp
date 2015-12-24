@@ -180,7 +180,7 @@ DECLARE_OOP_TEST ( test_get_regular_salary_depends_on_level )
 
 
 
-/*****************************************************************************/
+/*****************************************************************************
 
 
 DECLARE_OOP_TEST ( test_get_manager_salary_depends_on_average )

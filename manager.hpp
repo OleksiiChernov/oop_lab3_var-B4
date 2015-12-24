@@ -27,6 +27,7 @@ public:
 	void setNewEmployee(std::string const & _fullName);
 	void deleteEmployee(std::string const & _fullName);
 	bool hasSubordinatedEmployee(std::string const & _fullName);
+	virtual float calculateSalaryPerMounth(float _baseSalary);
 	void fireManager();
 
 private:

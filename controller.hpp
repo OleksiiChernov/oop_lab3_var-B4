@@ -71,8 +71,8 @@ public:
 
 private:
 
-	int getRegularEmployeeNumberAtContainer(std::string const & _fullName) const;
-	int getManagerNumberAtContainer(std::string const & _fullName) const;
+	auto getRegularEmployeeNumberAtContainer(std::string const & _fullName) const;
+	auto getManagerNumberAtContainer(std::string const & _fullName) const;
 
 	std::vector <Manager *> m_managers;
 	std::vector <RegularEmployee *> m_regularEmployee;
