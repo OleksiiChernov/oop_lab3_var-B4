@@ -6,6 +6,7 @@
 /*****************************************************************************/
 
 #include "employee.hpp"
+#include "regularemployee.hpp"
 #include <vector>
 #include <string>
 
@@ -17,17 +18,16 @@ class Manager
 {
 public:
 
-	Manager(std::string _name)
+	Manager(std::string const & _name)
 		: Employee(_name)
 	{}
 
 	std::vector <Employee *> const & getSubordinateEmployee() const { return m_subordinateEmployee; }
 
 	float getManagerSalary(float _baseSalary);
-	void setNewEmployee(std::string const & _fullName);
+	void setNewEmployee( Employee & _empl);
 	void deleteEmployee(std::string const & _fullName);
 	bool hasSubordinatedEmployee(std::string const & _fullName);
-	virtual float calculateSalaryPerMounth(float _baseSalary);
 	void fireManager();
 
 private:

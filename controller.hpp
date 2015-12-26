@@ -74,6 +74,10 @@ private:
 	auto getRegularEmployeeNumberAtContainer(std::string const & _fullName) const;
 	auto getManagerNumberAtContainer(std::string const & _fullName) const;
 
+	int isEmployeeOrManager(std::string const & _fullname);
+	void assignEmployeeToManager(std::string const & _employeeName, std::string const & _managerName);
+	void assignManagerToManager(std::string const & _employeeName, std::string const & _managerName);
+
 	std::vector <Manager *> m_managers;
 	std::vector <RegularEmployee *> m_regularEmployee;
 

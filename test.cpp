@@ -180,7 +180,7 @@ DECLARE_OOP_TEST ( test_get_regular_salary_depends_on_level )
 
 
 
-/*****************************************************************************
+/*****************************************************************************/
 
 
 DECLARE_OOP_TEST ( test_get_manager_salary_depends_on_average )
@@ -196,6 +196,7 @@ DECLARE_OOP_TEST ( test_get_manager_salary_depends_on_average )
 	c.assignManager( "Petrov",  "Alekseyev" );
 	c.assignManager( "Sidorov", "Alekseyev" );
 
+	double x = c.getEmployeeSalary("Alekseyev", 500.0);
 	assert( c.getEmployeeSalary( "Alekseyev", 500.0 ) == 900.0 ); // 2 * ( 250 + 500 + 600 ) / 3
 
 	c.assignManager( "Fedorov", "Alekseyev" );
@@ -215,7 +216,7 @@ DECLARE_OOP_TEST ( test_get_manager_salary_without_subordinates )
 }
 
 
-/*****************************************************************************/
+/*****************************************************************************
 
 
 DECLARE_OOP_TEST ( test_get_salary_with_bonus )
@@ -234,6 +235,7 @@ DECLARE_OOP_TEST ( test_get_salary_with_bonus )
 	assert( c.getEmployeeBonus( "Ivanov" ) == 100.0 );
 	assert( c.getEmployeeBonus( "Petrov" ) == 300.0 );
 
+	double x = c.getEmployeeSalary("Petrov", 500.0);
 	assert( c.getEmployeeSalary( "Ivanov", 500.0 ) == 350.0 ); // 0.5 * 500 + 100
 	assert( c.getEmployeeSalary( "Petrov", 500.0 ) == 800.0 ); // 2 * 250 + 300
 }
@@ -411,7 +413,7 @@ DECLARE_OOP_TEST ( test_assign_non_manager_as_manager )
 }
 
 
-/*****************************************************************************/
+/*****************************************************************************
 
 
 DECLARE_OOP_TEST ( test_assign_employee_to_two_managers_leaves_last )
@@ -430,7 +432,7 @@ DECLARE_OOP_TEST ( test_assign_employee_to_two_managers_leaves_last )
 }
 
 
-/*****************************************************************************/
+/*****************************************************************************
 
 
 DECLARE_OOP_TEST ( test_assign_employee_to_same_manager_twice )

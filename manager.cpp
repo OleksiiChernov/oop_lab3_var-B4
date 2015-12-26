@@ -7,16 +7,26 @@
 
 float Manager::getManagerSalary(float _baseSalary)
 {
-	float sum = 0;
+	if(_baseSalary == 0.0)
+		return getSalaryBonus();
 
-	for (Employee * _empl : m_subordinateEmployee)
-		sum += _empl->calculateSalaryPerMounth(_baseSalary);
+	if (m_subordinateEmployee.size() > 0)
+	{
+		float sum = 0;
 
-	return 2 * sum + getSalaryBonus();
+		for (Employee * _empl : m_subordinateEmployee)
+			sum += _empl->calculateSalaryPerMounth(_baseSalary);
+
+		return 2 * (sum / m_subordinateEmployee.size()) + getSalaryBonus();
+	}
+	else
+		return 0.0;
+
 }
 
-void Manager::setNewEmployee(std::string const & _fullName)
+void Manager::setNewEmployee(Employee & _empl)
 {
+	std::string _fullName = _empl.getEmployeeName();
 	auto it = std::find_if(m_subordinateEmployee.begin(), m_subordinateEmployee.end(), 
 		[_fullName](Employee const * _empl)
 	{
@@ -26,13 +36,11 @@ void Manager::setNewEmployee(std::string const & _fullName)
 			return false;
 	}
 		);
-	if (it == m_subordinateEmployee.end())
-	{
-		Employee * _empl = new Employee(_fullName);
-		m_subordinateEmployee.push_back(_empl);
-	}
-	else
+	if (it != m_subordinateEmployee.end())
 		throw std::logic_error(Messages::SubordinateAlreadyAdded);
+	else
+		m_subordinateEmployee.push_back(&_empl);
+		
 }
 
 void Manager::deleteEmployee(std::string const & _fullName)
@@ -72,15 +80,6 @@ bool Manager::hasSubordinatedEmployee(std::string const & _fullName)
 		return false;
 }
 
-float Manager::calculateSalaryPerMounth(float _baseSalary)
-{
-	if (m_subordinateEmployee.size() > 0)
-		return getManagerSalary(_baseSalary);
-	else
-		return 0.0;
-
-}
-
 
 void Manager::fireManager()
 {
@@ -88,4 +87,5 @@ void Manager::fireManager()
 		_emp->delManager();
 
 	m_subordinateEmployee.clear();
+	delete this;
 }
