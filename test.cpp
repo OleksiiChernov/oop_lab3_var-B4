@@ -216,7 +216,7 @@ DECLARE_OOP_TEST ( test_get_manager_salary_without_subordinates )
 }
 
 
-/*****************************************************************************
+/*****************************************************************************/
 
 
 DECLARE_OOP_TEST ( test_get_salary_with_bonus )
@@ -413,7 +413,7 @@ DECLARE_OOP_TEST ( test_assign_non_manager_as_manager )
 }
 
 
-/*****************************************************************************
+/*****************************************************************************/
 
 
 DECLARE_OOP_TEST ( test_assign_employee_to_two_managers_leaves_last )
@@ -432,7 +432,7 @@ DECLARE_OOP_TEST ( test_assign_employee_to_two_managers_leaves_last )
 }
 
 
-/*****************************************************************************
+/*****************************************************************************/
 
 
 DECLARE_OOP_TEST ( test_assign_employee_to_same_manager_twice )

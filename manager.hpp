@@ -28,7 +28,6 @@ public:
 	void setNewEmployee( Employee & _empl);
 	void deleteEmployee(std::string const & _fullName);
 	bool hasSubordinatedEmployee(std::string const & _fullName);
-	void fireManager();
 
 private:
 

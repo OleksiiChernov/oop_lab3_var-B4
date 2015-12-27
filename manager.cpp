@@ -15,7 +15,10 @@ float Manager::getManagerSalary(float _baseSalary)
 		float sum = 0;
 
 		for (Employee * _empl : m_subordinateEmployee)
+		{
 			sum += _empl->calculateSalaryPerMounth(_baseSalary);
+			sum -= _empl->getSalaryBonus();
+		}
 
 		return 2 * (sum / m_subordinateEmployee.size()) + getSalaryBonus();
 	}
@@ -80,12 +83,3 @@ bool Manager::hasSubordinatedEmployee(std::string const & _fullName)
 		return false;
 }
 
-
-void Manager::fireManager()
-{
-	for (Employee * _emp : m_subordinateEmployee)
-		_emp->delManager();
-
-	m_subordinateEmployee.clear();
-	delete this;
-}

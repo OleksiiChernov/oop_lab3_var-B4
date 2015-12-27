@@ -40,21 +40,21 @@ auto Controller::getRegularEmployeeNumberAtContainer(std::string const & _fullNa
 
 auto Controller::getManagerNumberAtContainer(std::string const & _fullName) const
 {
-	auto itr = std::find_if(m_managers.begin(), m_managers.end(), 
-		[_fullName](Manager const * _mng)
-	{
-		if (_mng->getEmployeeName() == _fullName)
-			return true;
+		auto itr = std::find_if(m_managers.begin(), m_managers.end(),
+			[_fullName](Manager const * _mng)
+		{
+			if (_mng->getEmployeeName() == _fullName)
+				return true;
+			else
+				return false;
+		}
+		);
+		if (itr != m_managers.end())
+		{
+			return itr;
+		}
 		else
-			return false;
-	}
-	);
-	if (itr != m_managers.end())
-	{
-		return itr;
-	}
-	else
-		return itr = m_managers.end();
+			return itr = m_managers.end();
 }
 
 int Controller::isEmployeeOrManager(std::string const & _fullname)
@@ -83,7 +83,9 @@ void Controller::assignEmployeeToManager(std::string const & _employeeName, std:
 			(*it_empl)->setManagerName(_managerName);
 		}
 	}
-	else
+	else if ((*it_empl)->getManagerName() == _managerName)
+		throw std::logic_error(Messages::SubordinateAlreadyAdded);
+	else 
 	{
 		auto it_mngToDel = getManagerNumberAtContainer((*it_empl)->getManagerName());
 		if (it_mngToDel != m_managers.end())
@@ -164,16 +166,14 @@ void Controller::createRegular(std::string const & _fullName, RegularEmployeeLev
 
 bool Controller::isKnownEmployee(std::string const & _fullName) const
 {
+	auto it_empl = getRegularEmployeeNumberAtContainer(_fullName);
 	auto it_mng = getManagerNumberAtContainer(_fullName);
 
-	if (it_mng != m_managers.end())
+	
+	if (it_empl != m_regularEmployee.end())
+		return true; 
+	else if (it_mng != m_managers.end())
 		return true;
-	else
-	{
-		auto it_empl = getRegularEmployeeNumberAtContainer(_fullName);
-		if (it_empl != m_regularEmployee.end())
-			return true;
-	}
 
 	return false;
 }
@@ -280,7 +280,8 @@ std::unordered_set<std::string> Controller::getManagerSubordinates(std::string c
 		}
 	}
 	else
-		return _employeeNames;
+		throw std::logic_error(Messages::UnregisteredEmployeeName);
+		//return _employeeNames;
 }
 
 
@@ -288,9 +289,15 @@ void Controller::assignManager(std::string const & _employeeFullName, std::strin
 {
 	int a = isEmployeeOrManager(_employeeFullName);
 
-	auto it_mng = getManagerNumberAtContainer(_employeeFullName);
+	auto it_mng = getManagerNumberAtContainer(_managerFullName);
 	if (it_mng == m_managers.end())
-		throw std::logic_error(Messages::NotAManager);
+	{
+		auto it_empl = getRegularEmployeeNumberAtContainer(_managerFullName);
+		if (it_empl != m_regularEmployee.end())
+			throw std::logic_error(Messages::NotAManager);
+		else
+			throw std::logic_error(Messages::UnregisteredEmployeeName);
+	}
 
 	if (a == 1)
 	{
@@ -370,11 +377,10 @@ void Controller::promote(std::string const & _employeeFullName)
 {
 	auto it_empl = getRegularEmployeeNumberAtContainer(_employeeFullName);
 	auto it_mng = getManagerNumberAtContainer(_employeeFullName);
-	if (it_empl >= m_regularEmployee.begin() && it_empl != m_regularEmployee.end())
-	{
+
+	if (it_empl != m_regularEmployee.end())
 		(*it_empl)->levelUp();
-	}
-	else if (it_mng >= m_managers.begin())
+	else if (it_mng != m_managers.end())
 		throw std::logic_error(Messages::CannotPromoteManagers);
 	else
 		throw std::logic_error(Messages::UnregisteredEmployeeName);
@@ -390,23 +396,23 @@ void Controller::fire(std::string const & _employeeFullName)
 	{
 		std::string _managerName = (*it_empl)->getManagerName();
 		if (_managerName == "")
-			delete (*it_empl);
+			m_regularEmployee.erase(it_empl);
 		else
 		{
 			auto it_mngDel = getManagerNumberAtContainer(_managerName);
 			if (it_mngDel != m_managers.end())
 			{
 				(*it_mngDel)->deleteEmployee(_employeeFullName);
-				delete (*it_empl);
+				m_regularEmployee.erase(it_empl);
 			}
 		}
 	}
 	else if (it_mng != m_managers.end())
 	{
-		(*it_mng)->fireManager();
-
 		if ((*it_mng)->getSubordinateEmployee().size() > 0)
 			throw std::logic_error(Messages::CannotFireAssignedManager);
+		else
+			m_managers.erase(it_mng);
 	}
 	else
 		throw std::logic_error(Messages::UnregisteredEmployeeName);
