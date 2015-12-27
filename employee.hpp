@@ -24,8 +24,8 @@ public:
 	void setManagerName(std::string  _managerName);
 	void delManager();
 
-	virtual float calculateSalaryPerMounth(float _baseSalary);
-	virtual float calculateSalaryPerYear(float _baseSalary);
+	virtual double calculateSalaryPerMounth(double _baseSalary);
+	virtual double calculateSalaryPerYear(double _baseSalary);
 
 	
 

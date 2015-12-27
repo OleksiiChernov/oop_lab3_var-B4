@@ -6,6 +6,7 @@
 #include <string>
 
 Employee::Employee(std::string const & _employeeName, double _salaryBonus)
+
 	: m_employeeName(_employeeName), m_salaryBonus(_salaryBonus)
 {
 	if (_employeeName == "")
@@ -16,7 +17,7 @@ Employee::Employee(std::string const & _employeeName, double _salaryBonus)
 	
 }
 
-float Employee::calculateSalaryPerYear(float _baseSalary)
+double Employee::calculateSalaryPerYear(double _baseSalary)
 {
 	return 12 * calculateSalaryPerMounth(_baseSalary);
 }
@@ -40,9 +41,9 @@ void Employee::delManager()
 	m_managerName = "";
 }
 
-float Employee::calculateSalaryPerMounth(float _baseSalary)
+double Employee::calculateSalaryPerMounth(double _baseSalary)
 {
 	if (_baseSalary < 0)
 		throw std::logic_error(Messages::NegativeBaseSalary);
-	return _baseSalary + (float)m_salaryBonus;
+	return _baseSalary + (double)m_salaryBonus;
 }

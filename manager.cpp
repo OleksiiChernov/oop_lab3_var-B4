@@ -5,14 +5,14 @@
 #include <string>
 #include <algorithm>
 
-float Manager::getManagerSalary(float _baseSalary)
+double Manager::getManagerSalary(double _baseSalary)
 {
 	if(_baseSalary == 0.0)
 		return getSalaryBonus();
 
 	if (m_subordinateEmployee.size() > 0)
 	{
-		float sum = 0;
+		double sum = 0;
 
 		for (Employee * _empl : m_subordinateEmployee)
 		{
@@ -59,8 +59,10 @@ void Manager::deleteEmployee(std::string const & _fullName)
 				return false;
 		}
 		);
-
-		m_subordinateEmployee.erase(it);
+		if (m_subordinateEmployee.size() == 1 && (*it)->getEmployeeName() == _fullName)
+			m_subordinateEmployee.clear();
+		else
+			m_subordinateEmployee.erase(it);
 	}
 	else
 		throw std::logic_error(Messages::UnregisteredEmployeeName);

@@ -23,8 +23,8 @@ public:
 	RegularEmployeeLevel const getEmployeeLevel() const { return m_employeeLevel; }
 	void levelUp();
 
-	virtual float calculateSalaryPerMounth(float _baseSalary);
-	virtual float calculateSalaryPerYear(float _baseSalary);
+	virtual double calculateSalaryPerMounth(double _baseSalary);
+	virtual double calculateSalaryPerYear(double _baseSalary);
 
 private:
 	RegularEmployeeLevel m_employeeLevel;

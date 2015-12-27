@@ -22,7 +22,7 @@ void RegularEmployee::levelUp()
 
 
 
-float RegularEmployee::calculateSalaryPerMounth(float _baseSalary)
+double RegularEmployee::calculateSalaryPerMounth(double _baseSalary)
 {
 	if (_baseSalary < 0)
 		throw std::logic_error(Messages::NegativeBaseSalary);
@@ -54,7 +54,7 @@ float RegularEmployee::calculateSalaryPerMounth(float _baseSalary)
 
 
 
-float RegularEmployee::calculateSalaryPerYear(float _baseSalary)
+double RegularEmployee::calculateSalaryPerYear(double _baseSalary)
 {
 	switch (m_employeeLevel)
 	{

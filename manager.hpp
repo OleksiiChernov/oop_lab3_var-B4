@@ -24,7 +24,7 @@ public:
 
 	std::vector <Employee *> const & getSubordinateEmployee() const { return m_subordinateEmployee; }
 
-	float getManagerSalary(float _baseSalary);
+	double getManagerSalary(double _baseSalary);
 	void setNewEmployee( Employee & _empl);
 	void deleteEmployee(std::string const & _fullName);
 	bool hasSubordinatedEmployee(std::string const & _fullName);

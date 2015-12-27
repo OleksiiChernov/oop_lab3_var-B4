@@ -278,10 +278,11 @@ std::unordered_set<std::string> Controller::getManagerSubordinates(std::string c
 				_employeeNames.insert(_empl->getEmployeeName());
 			return _employeeNames;
 		}
+		else
+			return _employeeNames;
 	}
 	else
 		throw std::logic_error(Messages::UnregisteredEmployeeName);
-		//return _employeeNames;
 }
 
 
